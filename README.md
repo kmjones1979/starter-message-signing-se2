@@ -66,6 +66,140 @@ Run smart contract test with `yarn hardhat:test`
 -   Edit your frontend homepage at `packages/nextjs/app/page.tsx`. For guidance on [routing](https://nextjs.org/docs/app/building-your-application/routing/defining-routes) and configuring [pages/layouts](https://nextjs.org/docs/app/building-your-application/routing/pages-and-layouts) checkout the Next.js documentation.
 -   Edit your deployment scripts in `packages/hardhat/deploy`
 
+## 🚰 Base Sepolia Faucet
+
+This project includes a signature-based faucet for Base Sepolia ETH. Users must sign a message to prove wallet ownership before receiving testnet ETH.
+
+### Features
+
+-   Message signing verification
+-   Rate limiting (24-hour cooldown per wallet)
+-   Base Sepolia ETH distribution
+-   Serverless deployment ready
+
+### Setup Instructions
+
+1. Configure Environment Variables
+
+    ```bash
+    # In packages/nextjs/.env
+    AIRDROP_PRIVATE_KEY=your_private_key_here  # Private key of the faucet wallet
+    BASE_SEPOLIA_RPC_URL=your_rpc_url_here     # Base Sepolia RPC URL
+    ```
+
+2. Fund the Faucet Wallet
+
+    - Send Base Sepolia ETH to the wallet address derived from your `AIRDROP_PRIVATE_KEY`
+    - Monitor the balance to ensure sufficient funds for airdrops
+
+3. Customize Faucet Settings (Optional)
+    ```typescript
+    // In packages/nextjs/app/api/faucet/route.ts
+    const AIRDROP_AMOUNT = "0.01"; // Adjust amount per request
+    const COOLDOWN_PERIOD = 24 * 60 * 60 * 1000; // Adjust cooldown period
+    ```
+
+### Components
+
+1. **Faucet API** (`packages/nextjs/app/api/faucet/route.ts`)
+
+    - Handles signature verification
+    - Manages rate limiting
+    - Processes ETH transfers
+
+    ```typescript
+    // Example request
+    POST /api/faucet
+    {
+      "address": "0x...",
+      "message": "Hello Web3!",
+      "signature": "0x..."
+    }
+    ```
+
+2. **Message Signing Interface** (`packages/nextjs/components/MessageSigning.tsx`)
+    - User interface for message signing
+    - Displays wallet address
+    - Shows transaction status
+    - Handles error messages
+
+### Security Considerations
+
+1. **Rate Limiting**
+
+    - One request per wallet address every 24 hours
+    - In-memory storage (resets on server restart)
+    - Consider implementing persistent storage for production
+
+2. **Signature Verification**
+
+    - Ensures wallet ownership
+    - Prevents unauthorized requests
+    - Uses viem for cryptographic operations
+
+3. **Environment Variables**
+    - Never commit private keys
+    - Use secure key management in production
+    - Rotate keys periodically
+
+### Deployment
+
+1. **Vercel Deployment**
+
+    - Add environment variables in Vercel dashboard
+    - Ensure RPC URL is reliable and rate-limit aware
+    - Monitor faucet wallet balance
+
+2. **Production Considerations**
+    - Implement persistent rate limiting storage
+    - Add monitoring and alerting
+    - Consider implementing additional anti-abuse measures
+
+### Customization
+
+1. **Message Format**
+
+    ```typescript
+    // Customize the default message
+    const [message, setMessage] = useState("Hello Web3!");
+    ```
+
+2. **UI Modifications**
+
+    ```typescript
+    // Add custom fields or validation
+    <div className="max-w-2xl mx-auto p-6 space-y-6">
+        {isConnected && <Address address={address} />}
+        // Add your custom UI elements
+    </div>
+    ```
+
+3. **Airdrop Logic**
+    ```typescript
+    // Modify airdrop amount or conditions
+    const AIRDROP_AMOUNT = "0.01";
+    // Add custom verification logic
+    ```
+
+### Troubleshooting
+
+1. **Rate Limit Issues**
+
+    - Check the cooldown period
+    - Verify wallet address formatting
+    - Monitor server restarts
+
+2. **Transaction Failures**
+
+    - Ensure faucet wallet is funded
+    - Check RPC URL stability
+    - Verify gas settings
+
+3. **Signature Verification**
+    - Ensure correct message format
+    - Check wallet connection
+    - Verify chain configuration
+
 ## 📝 Message Signing Demo
 
 This project includes a demonstration of Ethereum message signing and verification, combining frontend components with smart contract functionality.

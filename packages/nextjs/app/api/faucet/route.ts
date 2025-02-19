@@ -7,14 +7,11 @@ if (!process.env.AIRDROP_PRIVATE_KEY) {
   throw new Error("AIRDROP_PRIVATE_KEY is required");
 }
 
-// Configure for Base Sepolia testnet
 const account = privateKeyToAccount(process.env.AIRDROP_PRIVATE_KEY as `0x${string}`);
-const AIRDROP_AMOUNT = "0.01"; // Amount in Base Sepolia ETH
+const AIRDROP_AMOUNT = "0.01";
 
-// Simple in-memory store for rate limiting
-// Note: This will reset when the serverless function cold starts
 const lastAirdropTime: { [address: string]: number } = {};
-const COOLDOWN_PERIOD = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+const COOLDOWN_PERIOD = 24 * 60 * 60 * 1000;
 
 const walletClient = createWalletClient({
   account,
@@ -31,7 +28,6 @@ export async function POST(request: Request) {
   try {
     const { address, message, signature } = await request.json();
 
-    // Check rate limit
     const now = Date.now();
     const lastAirdrop = lastAirdropTime[address] || 0;
     if (now - lastAirdrop < COOLDOWN_PERIOD) {
@@ -42,7 +38,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Verify the signature
     const isValid = await publicClient.verifyMessage({
       address: address as `0x${string}`,
       message,
@@ -53,16 +48,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
     }
 
-    // Send ETH
     const hash = await walletClient.sendTransaction({
       to: address as `0x${string}`,
       value: parseEther(AIRDROP_AMOUNT),
     });
 
-    // Wait for transaction
     const receipt = await publicClient.waitForTransactionReceipt({ hash });
 
-    // Update rate limit
     lastAirdropTime[address] = now;
 
     return NextResponse.json({

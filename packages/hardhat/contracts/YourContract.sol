@@ -1,7 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract YourContract {
+contract YourContract is Ownable {
+
+    constructor(address _owner) Ownable(_owner) {}
+
     function getMessageHash(string memory message) public pure returns (bytes32) {
         return keccak256(abi.encodePacked(message));
     }

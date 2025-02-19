@@ -2,15 +2,13 @@
 
 import { useState } from "react";
 import type { NextPage } from "next";
-import { toast } from "react-hot-toast";
+import { Toaster, toast } from "react-hot-toast";
 import { verifyMessage } from "viem";
-import { useAccount, useConnect, useSignMessage } from "wagmi";
+import { useAccount, useSignMessage } from "wagmi";
 import { Address } from "~~/components/scaffold-eth";
 
 const MessageSigning: NextPage = () => {
-  const { address: connectedAddress } = useAccount();
-
-  const [message, setMessage] = useState("Hello Web3!");
+  const [message, setMessage] = useState("I'd like to receive Base Sepolia ETH!");
   const [signature, setSignature] = useState("");
   const [recoveredAddress, setRecoveredAddress] = useState<`0x${string}`>("0x0000000000000000000000000000000000000000");
   const [isVerified, setIsVerified] = useState(false);
@@ -44,8 +42,8 @@ const MessageSigning: NextPage = () => {
         toast.error(data.error);
       }
     } catch (error) {
-      console.error("Airdrop request failed:", error);
-      toast.error("Failed to request airdrop");
+      console.error("request failed:", error);
+      toast.error("request failed");
     }
   };
 
@@ -76,14 +74,21 @@ const MessageSigning: NextPage = () => {
 
   return (
     <div className="max-w-2xl mx-auto p-6 space-y-6">
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          style: {
+            width: "100%",
+          },
+        }}
+      />
       <div className="space-y-2">
         {isConnected && <Address address={address} />}
         <label className="block text-sm font-medium p-2">Message to Sign</label>
-        <input
-          type="text"
+        <textarea
           value={message}
           onChange={e => setMessage(e.target.value)}
-          className="w-full p-2 border rounded"
+          className="w-full p-2 border rounded h-32"
           placeholder="Enter a message to sign"
         />
       </div>

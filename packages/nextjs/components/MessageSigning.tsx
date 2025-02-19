@@ -36,18 +36,6 @@ const MessageSigning: NextPage = () => {
     signMessage({ message });
   };
 
-  // if (!isConnected) {
-  //   return (
-  //     <div className="max-w-2xl mx-auto p-6">
-  //       <button
-  //         onClick={() => connect({ connector: connectors[0] })}
-  //         className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-  //       >
-  //         Connect Wallet
-  //       </button>
-  //     </div>
-  //   );
-  // }
   return (
     <div className="max-w-2xl mx-auto p-6 space-y-6">
       <div className="space-y-2">

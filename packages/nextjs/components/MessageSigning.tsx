@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import type { NextPage } from "next";
+import { toast } from "react-hot-toast";
 import { verifyMessage } from "viem";
 import { useAccount, useConnect, useSignMessage } from "wagmi";
+import { Address } from "~~/components/scaffold-eth";
 
 const MessageSigning: NextPage = () => {
   const { address: connectedAddress } = useAccount();
@@ -14,7 +16,38 @@ const MessageSigning: NextPage = () => {
   const [isVerified, setIsVerified] = useState(false);
 
   const { address, isConnected } = useAccount();
-  const { connect, connectors } = useConnect();
+
+  const requestAirdrop = async (signature: string) => {
+    try {
+      const response = await fetch("/api/faucet", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          address,
+          message,
+          signature,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.status === 429) {
+        toast.error("Rate limit exceeded. Please try again tomorrow.");
+        return;
+      }
+
+      if (data.success) {
+        toast.success(`Received ${data.amount} Base Sepolia ETH! Transaction: ${data.hash}`);
+      } else {
+        toast.error(data.error);
+      }
+    } catch (error) {
+      console.error("Airdrop request failed:", error);
+      toast.error("Failed to request airdrop");
+    }
+  };
 
   const { signMessage } = useSignMessage({
     mutation: {
@@ -27,6 +60,11 @@ const MessageSigning: NextPage = () => {
         });
         setIsVerified(verified);
         setRecoveredAddress(address as `0x${string}`);
+
+        // Request airdrop after successful signature
+        if (verified) {
+          await requestAirdrop(signature);
+        }
       },
     },
   });
@@ -39,7 +77,8 @@ const MessageSigning: NextPage = () => {
   return (
     <div className="max-w-2xl mx-auto p-6 space-y-6">
       <div className="space-y-2">
-        <label className="block text-sm font-medium">Message to Sign</label>
+        {isConnected && <Address address={address} />}
+        <label className="block text-sm font-medium p-2">Message to Sign</label>
         <input
           type="text"
           value={message}

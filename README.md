@@ -9,11 +9,11 @@
 
 ⚙️ Built using NextJS, RainbowKit, Hardhat, Wagmi, Viem, and Typescript.
 
-- ✅ **Contract Hot Reload**: Your frontend auto-adapts to your smart contract as you edit it.
-- 🪝 **[Custom hooks](https://docs.scaffoldeth.io/hooks/)**: Collection of React hooks wrapper around [wagmi](https://wagmi.sh/) to simplify interactions with smart contracts with typescript autocompletion.
-- 🧱 [**Components**](https://docs.scaffoldeth.io/components/): Collection of common web3 components to quickly build your frontend.
-- 🔥 **Burner Wallet & Local Faucet**: Quickly test your application with a burner wallet and local faucet.
-- 🔐 **Integration with Wallet Providers**: Connect to different wallet providers and interact with the Ethereum network.
+-   ✅ **Contract Hot Reload**: Your frontend auto-adapts to your smart contract as you edit it.
+-   🪝 **[Custom hooks](https://docs.scaffoldeth.io/hooks/)**: Collection of React hooks wrapper around [wagmi](https://wagmi.sh/) to simplify interactions with smart contracts with typescript autocompletion.
+-   🧱 [**Components**](https://docs.scaffoldeth.io/components/): Collection of common web3 components to quickly build your frontend.
+-   🔥 **Burner Wallet & Local Faucet**: Quickly test your application with a burner wallet and local faucet.
+-   🔐 **Integration with Wallet Providers**: Connect to different wallet providers and interact with the Ethereum network.
 
 ![Debug Contracts tab](https://github.com/scaffold-eth/scaffold-eth-2/assets/55535804/b237af0c-5027-4849-a5c1-2e31495cccb1)
 
@@ -21,9 +21,9 @@
 
 Before you begin, you need to install the following tools:
 
-- [Node (>= v18.18)](https://nodejs.org/en/download/)
-- Yarn ([v1](https://classic.yarnpkg.com/en/docs/install/) or [v2+](https://yarnpkg.com/getting-started/install))
-- [Git](https://git-scm.com/downloads)
+-   [Node (>= v18.18)](https://nodejs.org/en/download/)
+-   Yarn ([v1](https://classic.yarnpkg.com/en/docs/install/) or [v2+](https://yarnpkg.com/getting-started/install))
+-   [Git](https://git-scm.com/downloads)
 
 ## Quickstart
 
@@ -62,10 +62,73 @@ Visit your app on: `http://localhost:3000`. You can interact with your smart con
 
 Run smart contract test with `yarn hardhat:test`
 
-- Edit your smart contracts in `packages/hardhat/contracts`
-- Edit your frontend homepage at `packages/nextjs/app/page.tsx`. For guidance on [routing](https://nextjs.org/docs/app/building-your-application/routing/defining-routes) and configuring [pages/layouts](https://nextjs.org/docs/app/building-your-application/routing/pages-and-layouts) checkout the Next.js documentation.
-- Edit your deployment scripts in `packages/hardhat/deploy`
+-   Edit your smart contracts in `packages/hardhat/contracts`
+-   Edit your frontend homepage at `packages/nextjs/app/page.tsx`. For guidance on [routing](https://nextjs.org/docs/app/building-your-application/routing/defining-routes) and configuring [pages/layouts](https://nextjs.org/docs/app/building-your-application/routing/pages-and-layouts) checkout the Next.js documentation.
+-   Edit your deployment scripts in `packages/hardhat/deploy`
 
+## 📝 Message Signing Demo
+
+This project includes a demonstration of Ethereum message signing and verification, combining frontend components with smart contract functionality.
+
+### Components Overview
+
+1. **Message Signing Interface** (`packages/nextjs/components/MessageSigning.tsx`)
+
+    - User interface for message signing
+    - Real-time signature verification
+    - MetaMask integration
+
+    ```typescript
+    const MessageSigning = () => {
+        const [message, setMessage] = useState("Hello Web3!");
+        // Customize the default message and UI as needed
+    };
+    ```
+
+2. **Smart Contract Verification** (`packages/hardhat/contracts/YourContract.sol`)
+    - On-chain signature verification
+    - Message hash generation
+    ```solidity
+    function verify(
+        address signer,
+        string memory message,
+        bytes memory signature
+    ) public pure returns (bool) {
+        // Customize verification logic here
+    }
+    ```
+
+### Customization Options
+
+1. **Message Format**
+
+    - Modify `getMessageHash` in YourContract.sol
+    - Add custom message structures
+
+    ```solidity
+    function getMessageHash(string memory message) public pure returns (bytes32) {
+        // Customize message hashing logic
+        return keccak256(abi.encodePacked(message));
+    }
+    ```
+
+2. **UI Modifications**
+
+    - Update the MessageSigning component
+    - Add new fields or validation
+
+    ```typescript
+    // Add custom message format
+    const [message, setMessage] = useState({
+        text: "Hello Web3!",
+        timestamp: Date.now(),
+    });
+    ```
+
+3. **Security Considerations**
+    - Client-side and on-chain verification
+    - Signature replay protection
+    - Nonce-based signing (optional)
 
 ## Documentation
 
